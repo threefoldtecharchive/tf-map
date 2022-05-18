@@ -11,6 +11,7 @@
   export let stroke: string = "#ccc";
   export let strokewidth: string = "1";
   export let width: string = "100%";
+  export let colors: string;
 
   let tooltip: HTMLDivElement;
   let instance: Instance;
@@ -38,6 +39,8 @@
     ) as any;
     instance.update();
   }
+
+  $: _colors = colors ? JSON.parse(colors) : {};
 </script>
 
 <section class="map">
@@ -56,6 +59,7 @@
         data-index={i}
         {stroke}
         stroke-width={+strokewidth}
+        fill={_colors[country.value] || _colors[country.id]}
       />
     {/each}
   </svg>

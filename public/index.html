@@ -11,13 +11,20 @@
 
   <body style="padding: 0; margin: 0">
     <div id="app">
-      <tf-map
+      <!-- <tf-map
         fill="#98d19b"
         stroke="#555"
         strokewidth="0.5"
         width="70%"
-        colors="{egypt: 'red'}"
-      ></tf-map>
+        colors='{"egypt":"red"}'
+      ></tf-map> -->
     </div>
+
+    <script>
+      const app = document.getElementById("app");
+      const map = document.createElement("tf-map");
+
+      app.appendChild(map);
+    </script>
   </body>
 </html>
