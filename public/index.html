@@ -6,25 +6,10 @@
 
     <title>Svelte app</title>
 
-    <script defer src="/build/tf-map.wc.js"></script>
+    <script defer src="/build/tf-map.js"></script>
   </head>
 
-  <body style="padding: 0; margin: 0">
-    <div id="app">
-      <!-- <tf-map
-        fill="#98d19b"
-        stroke="#555"
-        strokewidth="0.5"
-        width="70%"
-        colors='{"egypt":"red"}'
-      ></tf-map> -->
-    </div>
-
-    <script>
-      const app = document.getElementById("app");
-      const map = document.createElement("tf-map");
-
-      app.appendChild(map);
-    </script>
+  <body>
+    <tf-map nodes='{"Belgium":21,"Germany":1,"United States":2}'></tf-map>
   </body>
 </html>

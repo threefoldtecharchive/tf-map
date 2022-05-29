@@ -40,7 +40,7 @@ export default {
     sourcemap: false,
     format: "iife",
     name: "app",
-    file: "public/build/tf-map.wc.js",
+    file: "public/build/tf-map.js",
   },
   plugins: [
     svelte({

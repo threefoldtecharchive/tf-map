@@ -2,79 +2,94 @@
 
 <script lang="ts">
   import { onMount } from "svelte";
-  import { createPopper, Instance } from "@popperjs/core/dist/esm/popper-lite";
+  import { fetchData, Country } from "./utils/fetchData";
 
-  import { countries, Country } from "./countries";
-  import { virtualElement, generateGetBoundingClientRect } from "./popper";
+  let countries: Country[] = [];
+  export let r: number = 82;
+  export let g: number = 255;
+  export let b: number = 82;
 
-  export let fill: string = "#d8d8d8";
-  export let stroke: string = "#ccc";
-  export let strokewidth: string = "1";
-  export let width: string = "100%";
-  export let colors: string;
+  export let nodes: string;
+  let nodesDistribution: { [key: string]: number } = {};
 
-  let tooltip: HTMLDivElement;
-  let instance: Instance;
+  $: {
+    try {
+      nodesDistribution = JSON.parse(nodes);
+    } catch {}
+  }
+
+  $: max = Math.max(0, ...Object.values(nodesDistribution));
 
   let show: boolean = false;
   let country: Country;
 
-  onMount(() => {
-    instance = createPopper(virtualElement, tooltip);
+  onMount(async () => {
+    countries = await fetchData();
   });
 
+  function hoverHandler(stroke: string = null) {
+    return (e: any) => {
+      e.target.style.stroke = stroke;
+    };
+  }
+
+  function isActive(name: string): number | null {
+    for (const key in nodesDistribution) {
+      if (name.startsWith(key)) {
+        return nodesDistribution[key];
+      }
+    }
+    return null;
+  }
+
+  let x = 0;
+  let y = 0;
+
   function onMouseMove(ev: MouseEvent): void {
-    const { clientX: x, clientY: y, target } = ev;
+    const { clientX: _x, clientY: _y, target } = ev;
     if (!(target instanceof SVGPathElement)) {
       show = false;
       return;
     }
-
     show = true;
+    x = _x - 10;
+    y = _y + 25;
     country = countries[target.getAttribute("data-index")];
-
-    virtualElement.getBoundingClientRect = generateGetBoundingClientRect(
-      x,
-      y
-    ) as any;
-    instance.update();
   }
-
-  $: _colors = colors ? JSON.parse(colors) : {};
 </script>
 
-<section class="map">
-  <div
-    bind:this={tooltip}
-    style={`display: ${show ? "block" : "none"}`}
-    class="tooltip"
-  >
-    {country?.value}
-  </div>
-  <svg {fill} {width} viewBox="-25 -25 1060 680" on:mousemove={onMouseMove}>
+<section on:mousemove={onMouseMove}>
+  {#if show}
+    <div
+      style={`
+  background-color: #333;
+  padding: 5px;
+  position: fixed;
+  top: ${y}px;
+  left: ${x}px;
+`}
+    >
+      <p style="color: white; font-size: 18px; margin: 0;">
+        <span style="display: block;">
+          {country?.name}
+        </span>
+        No.of nodes: {isActive(country.name) || 0}
+      </p>
+    </div>
+  {/if}
+  <svg width="100%" viewBox="30 -192 960 630" fill="#ececec" stroke="#ccc">
     {#each countries as country, i}
       <path
         id={country.id}
-        d={country.d}
+        data-name={country.name}
         data-index={i}
-        {stroke}
-        stroke-width={+strokewidth}
-        fill={_colors[country.value] || _colors[country.id]}
+        d={country.d}
+        on:mousemove={hoverHandler("#888")}
+        on:mouseleave={hoverHandler()}
+        fill={isActive(country.name)
+          ? `rgba(${r}, ${g}, ${b}, ${0.5 + isActive(country.name) / max})`
+          : null}
       />
     {/each}
   </svg>
 </section>
-
-<style lang="scss" scoped>
-  .map * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-  }
-
-  .tooltip {
-    padding: 5px;
-    border-radius: 5px;
-    background-color: white;
-  }
-</style>
