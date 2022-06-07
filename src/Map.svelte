@@ -5,9 +5,12 @@
   import { fetchData, Country } from "./utils/fetchData";
 
   let countries: Country[] = [];
-  export let r: number = 82;
-  export let g: number = 255;
-  export let b: number = 82;
+  export let fill: string = "ghostwhite";
+  export let stroke: string = "#4cbbd9";
+  export let strokewidth: number = 0.5;
+  export let r: number = 25;
+  export let g: number = 130;
+  export let b: number = 177;
 
   export let nodes: string;
   let nodesDistribution: { [key: string]: number } = {};
@@ -77,14 +80,20 @@
       </p>
     </div>
   {/if}
-  <svg width="100%" viewBox="30 -192 960 630" fill="#ececec" stroke="#ccc">
+  <svg
+    width="100%"
+    viewBox="30 -192 960 630"
+    {fill}
+    {stroke}
+    stroke-width={strokewidth}
+  >
     {#each countries as country, i}
       <path
         id={country.id}
         data-name={country.name}
         data-index={i}
         d={country.d}
-        on:mousemove={hoverHandler("#888")}
+        on:mousemove={hoverHandler("#1982b1")}
         on:mouseleave={hoverHandler()}
         fill={isActive(country.name)
           ? `rgba(${r}, ${g}, ${b}, ${0.5 + isActive(country.name) / max})`
