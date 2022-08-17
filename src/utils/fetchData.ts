@@ -16,6 +16,10 @@ export interface Country {
 export function fetchData(): Promise<Country[]> {
   let m: Map<string, string>;
 
+  const namesToConvert = {
+    "Viet Nam": "Vietnam",
+  };
+
   return csv(NAMES_URL)
     .then((cs) => {
       return cs.reduce((res, c) => {
@@ -35,5 +39,11 @@ export function fetchData(): Promise<Country[]> {
         };
       });
     })
-    .then((countries) => countries.filter((c) => !!c.name));
+    .then((countries) => countries.filter((c) => !!c.name))
+    .then((countries) => {
+      return countries.map((c) => {
+        if (c.name in namesToConvert) c.name = namesToConvert[c.name];
+        return c;
+      });
+    });
 }
